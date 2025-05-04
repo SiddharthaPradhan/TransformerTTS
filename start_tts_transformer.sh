@@ -9,6 +9,6 @@
 #SBATCH --output=/home/sppradhan/TTS/transformer_tts_%j.txt
 
 module load cuda
-module load python/3.12
-source ~/TTS/.venv/bin/activate
+module load python/3.12.6
+source ~/TransformerTTS/.venv/bin/activate
 python main.py

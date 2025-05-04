@@ -16,7 +16,7 @@ class Pipeline:
         criterion = TTS_Loss().to(device)
         self.trainer = Trainer(mel_bins, self.model, max_epochs, optimizer, criterion,
                       train_dl, val_dl, test_dl, device, checkpoint_prefix, teacher_f_ratio=teacher_f_ratio, 
-                      grad_clip=True, max_norm=1.0)
+                      grad_clip=True, max_norm=2.0)
 
     def model_info(self):
         params = filter(lambda p: p.requires_grad, self.model.parameters())
