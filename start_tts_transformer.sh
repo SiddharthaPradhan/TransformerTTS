@@ -6,7 +6,7 @@
 #SBATCH -p short
 #SBATCH -t 24:00:00
 #SBATCH --gres=gpu:1
-#SBATCH --output=/home/sppradhan/TTS/transformer_tts_%j.txt
+#SBATCH --output=/home/sppradhan/TransformerTTS/transformer_tts_%j.txt
 
 module load cuda
 module load python/3.12.6
