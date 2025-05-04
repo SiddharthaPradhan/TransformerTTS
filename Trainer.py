@@ -55,6 +55,8 @@ class Trainer():
 
     def train(self):
         print("Starting training")
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        print("Using Device=", device)
         # trains self.model with certain params
         for epoch in range(self.max_epochs):
             self.model.train()
