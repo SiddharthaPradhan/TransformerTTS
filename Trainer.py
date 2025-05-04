@@ -144,11 +144,11 @@ class Trainer():
             step_number = epoch * len(self.train_dl) + 1
             self.log_losses(epoch_loss, epoch_mel_loss, epoch_stop_loss, step_number, LossType.TRAIN)
             self.log_losses(epoch_val_loss, epoch_val_mel_loss, epoch_val_stop_loss, step_number, LossType.VAL)
-            if step_number % 1000: # log images and audio every 1000 steps
-                self.log_images(sample_mel_train, sample_alignment_train, step_number, LossType.TRAIN)
-                self.log_images(sample_mel_val, sample_alignment_val, step_number, LossType.VAL)
-                self.log_sound(sample_mel_train, sample_text_train, step_number, LossType.TRAIN)
-                self.log_sound(sample_mel_val, sample_text_val, step_number, LossType.VAL)
+            # if step_number % 1000: # log images and audio every 1000 steps
+            self.log_images(sample_mel_train, sample_alignment_train, step_number, LossType.TRAIN)
+            self.log_images(sample_mel_val, sample_alignment_val, step_number, LossType.VAL)
+            self.log_sound(sample_mel_train, sample_text_train, step_number, LossType.TRAIN)
+            self.log_sound(sample_mel_val, sample_text_val, step_number, LossType.VAL)
             print(f"Epoch {epoch + 1}/{self.max_epochs},\n"
                   f"Train Loss (total / mel / stop): {epoch_loss, epoch_mel_loss, epoch_stop_loss},\n"
                   f"Valid Loss (total / mel / stop): {epoch_val_loss, epoch_val_mel_loss, epoch_val_stop_loss}\n"

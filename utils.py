@@ -96,9 +96,12 @@ class SpeechConverter():
 # plotting utils from https://github.com/BogiHsu/Tacotron2-PyTorch/blob/master/utils/plot.py
 def figure_to_numpy(fig):
     # save it to a numpy array.
-    data = np.fromstring(fig.canvas.tostring_rgb(), dtype=np.uint8, sep='')
-    data = data.reshape(fig.canvas.get_width_height()[::-1] + (3,))
-    return data.transpose(2, 0, 1)
+    width, height = fig.canvas.get_width_height()
+    data = np.frombuffer(fig.canvas.tostring_argb(), dtype=np.uint8)
+    data = data.reshape(int(height), int(width), 4)
+    data = data[:, :, 1:4]
+    data = data.transpose(2, 0, 1)
+    return data
 
 
 def alignment_to_numpy(alignment, info=None):
