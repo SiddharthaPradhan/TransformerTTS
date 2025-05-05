@@ -1,5 +1,6 @@
 from TacoTron import TacoTronTTS
 from TransformerTTS import TransformerTTS
+from TransformerTTS_No_PE import TransformerTTS_No_PE
 from tts_dataloader import symbols_len
 from torch.optim import Adam
 from torch import nn
@@ -35,6 +36,8 @@ def get_model(model_name: str, mel_bins) -> nn.Module:
         model =  TacoTronTTS(mel_bins=mel_bins, **tacotron_config)
     elif model_name == 'TransformerTTS':
         model =  TransformerTTS(mel_bins=mel_bins, **transformer_config)
+    elif model_name == 'TransformerTTS_No_PE':
+        model =  TransformerTTS_No_PE(mel_bins=mel_bins, **transformer_config)
     else:
         raise ValueError('Invalid model name for model hyper params.')
     return model

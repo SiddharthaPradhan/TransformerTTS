@@ -6,22 +6,39 @@ from utils import SpeechConverter, alignment_to_numpy, spectrogram_to_numpy
 from tts_dataloader import seq_to_text
 
 
+# class TTS_Loss(nn.Module):
+#     def __init__(self, stop_token_loss_multiplier=1):
+#         super(TTS_Loss, self).__init__()
+#         self.mel_loss_mse_sum = torch.nn.MSELoss(reduction='sum')
+#         self.post_net_mse_sum = torch.nn.MSELoss(reduction='sum')
+#         self.stop_token_loss_sum = torch.nn.BCEWithLogitsLoss(reduction='sum', pos_weight=torch.Tensor([5]))
+#         self.stop_token_alpha = stop_token_loss_multiplier
+
+#     def forward(self, mel_output: torch.Tensor, post_net_out: torch.Tensor, mel_target: torch.Tensor,
+#                 stop_token_out: torch.Tensor, stop_token_targets: torch.Tensor, mask: torch.Tensor):
+#         # count total number of 'real' predictions, i.e exclude masked values from loss calculations
+#         total_not_padding = (~mask).sum()
+#         n_mels_out = mel_output.size(-1)
+#         mel_loss = self.mel_loss_mse_sum(mel_output, mel_target) / (total_not_padding)
+#         post_net_loss = self.mel_loss_mse_sum(post_net_out, mel_target) / (total_not_padding)
+#         stop_token_loss = self.stop_token_loss_sum(stop_token_out, stop_token_targets) / total_not_padding
+#         return mel_loss+post_net_loss, stop_token_loss * self.stop_token_alpha
+
+
 class TTS_Loss(nn.Module):
     def __init__(self, stop_token_loss_multiplier=1):
         super(TTS_Loss, self).__init__()
-        self.mel_loss_mse_sum = torch.nn.MSELoss(reduction='sum')
-        self.post_net_mse_sum = torch.nn.MSELoss(reduction='sum')
-        self.stop_token_loss_sum = torch.nn.BCEWithLogitsLoss(reduction='sum', pos_weight=torch.Tensor([5]))
+        self.mel_loss_mse_sum = torch.nn.MSELoss()
+        self.post_net_mse_sum = torch.nn.MSELoss()
+        self.stop_token_loss_sum = torch.nn.BCEWithLogitsLoss(pos_weight=torch.Tensor([5]))
         self.stop_token_alpha = stop_token_loss_multiplier
 
     def forward(self, mel_output: torch.Tensor, post_net_out: torch.Tensor, mel_target: torch.Tensor,
                 stop_token_out: torch.Tensor, stop_token_targets: torch.Tensor, mask: torch.Tensor):
         # count total number of 'real' predictions, i.e exclude masked values from loss calculations
-        total_not_padding = (~mask).sum()
-        n_mels_out = mel_output.size(-1)
-        mel_loss = self.mel_loss_mse_sum(mel_output, mel_target) / (total_not_padding)
-        post_net_loss = self.mel_loss_mse_sum(post_net_out, mel_target) / (total_not_padding)
-        stop_token_loss = self.stop_token_loss_sum(stop_token_out, stop_token_targets) / total_not_padding
+        mel_loss = self.mel_loss_mse_sum(mel_output, mel_target) 
+        post_net_loss = self.mel_loss_mse_sum(post_net_out, mel_target)
+        stop_token_loss = self.stop_token_loss_sum(stop_token_out, stop_token_targets)
         return mel_loss+post_net_loss, stop_token_loss * self.stop_token_alpha
 
 
@@ -144,15 +161,15 @@ class Trainer():
             step_number = epoch * len(self.train_dl) + 1
             self.log_losses(epoch_loss, epoch_mel_loss, epoch_stop_loss, step_number, LossType.TRAIN)
             self.log_losses(epoch_val_loss, epoch_val_mel_loss, epoch_val_stop_loss, step_number, LossType.VAL)
-            # if step_number % 1000: # log images and audio every 1000 steps
-            self.log_images(sample_mel_train, sample_alignment_train, step_number, LossType.TRAIN)
-            self.log_images(sample_mel_val, sample_alignment_val, step_number, LossType.VAL)
-            self.log_sound(sample_mel_train, sample_text_train, step_number, LossType.TRAIN)
-            self.log_sound(sample_mel_val, sample_text_val, step_number, LossType.VAL)
-            print(f"Epoch {epoch + 1}/{self.max_epochs},\n"
-                  f"Train Loss (total / mel / stop): {epoch_loss, epoch_mel_loss, epoch_stop_loss},\n"
-                  f"Valid Loss (total / mel / stop): {epoch_val_loss, epoch_val_mel_loss, epoch_val_stop_loss}\n"
-                  "------------------------------------------------------------------------------------")
+            if step_number % 1000: # log images and audio every 1000 steps
+                self.log_images(sample_mel_train, sample_alignment_train, step_number, LossType.TRAIN)
+                self.log_images(sample_mel_val, sample_alignment_val, step_number, LossType.VAL)
+                self.log_sound(sample_mel_train, sample_text_train, step_number, LossType.TRAIN)
+                self.log_sound(sample_mel_val, sample_text_val, step_number, LossType.VAL)
+                print(f"Epoch {epoch + 1}/{self.max_epochs},\n"
+                    f"Train Loss (total / mel / stop): {epoch_loss, epoch_mel_loss, epoch_stop_loss},\n"
+                    f"Valid Loss (total / mel / stop): {epoch_val_loss, epoch_val_mel_loss, epoch_val_stop_loss}\n"
+                    "------------------------------------------------------------------------------------")
         self.writer.close()
 
     @staticmethod

@@ -32,7 +32,7 @@ class Pipeline:
 
 # Seq2SeqTTS = 'Seq2SeqTTS_GRU'
 TransformerTTS = 'TransformerTTS'
-
+# TransformerTTS = 'TransformerTTS_No_PE'
 if __name__ == "__main__":
     model_name = TransformerTTS  # Model name
     # Checkpoint location
@@ -42,9 +42,10 @@ if __name__ == "__main__":
     checkpoint_prefix = checkpoint_dir
     # hyperparams
     mel_bins = 80
-    batch_size = 128
-    lr = 3*1e-4
-    weight_decay = 1e-6
+    batch_size = 64
+    lr = 2*1e-4
+    # weight_decay = 1e-6
+    weight_decay = 0
     max_epochs = 10000
     subsample_ratio = None # For testing arch (value of None for actual training)
 

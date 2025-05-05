@@ -90,7 +90,7 @@ class SpeechConverter():
             )  
         return mel_spec
     
-    
+  
 
 
 # plotting utils from https://github.com/BogiHsu/Tacotron2-PyTorch/blob/master/utils/plot.py
